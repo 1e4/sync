@@ -35,7 +35,6 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <div id="chat-window">
-                                {{ socket_room }}
                                 <ul class="list-unstyled chat-messages">
                                     <li v-for="(msg, index) in chat" v-bind:key="index" class="chat-message">
                                         <span class="author"><span v-if="msg.from_id === socket_room.owner">[o]</span>{{
