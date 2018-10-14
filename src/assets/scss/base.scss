@@ -13,4 +13,13 @@
 #chat-window {
     height: 100%;
     overflow-y: scroll;
+
+    .chat-messages {
+        .chat-message {
+            .author {
+                font-weight: bold;
+                margin-right: 15px;
+            }
+        }
+    }
 }

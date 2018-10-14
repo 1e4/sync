@@ -15,6 +15,11 @@ window.$socket.on('connection', (socket) => {
     console.log(socket, 'connected');
 });
 
+
+window.$socket.on('client id', (id) => {
+    window.vue.$root.$data.socket_id = id;
+});
+
 window.$socket.on('room created', (room) => {
     console.log('Room created', room);
     router.push({
@@ -26,7 +31,10 @@ window.$socket.on('room created', (room) => {
 
 });
 
-new Vue({
-  router,
-  render: h => h(App)
+window.vue = new Vue({
+    router,
+    data: {
+        socket_id: null
+    },
+    render: h => h(App)
 }).$mount('#app')

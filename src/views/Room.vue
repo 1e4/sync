@@ -17,7 +17,6 @@
                     </div>
                     <div class="row">
                         <div class="col-6">
-
                             <button @click.prevent="play" class="btn btn-primary">Play</button>
                             <button @click.prevent="pause" class="btn btn-primary">Pause</button>
                         </div>
@@ -36,9 +35,11 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <div id="chat-window">
-                                <ul class="list-unstyled">
-                                    <li v-for="(msg, index) in chat" v-bind:key="index">
-                                        <span class="author">{{ msg.from }}</span>
+                                {{ socket_room }}
+                                <ul class="list-unstyled chat-messages">
+                                    <li v-for="(msg, index) in chat" v-bind:key="index" class="chat-message">
+                                        <span class="author"><span v-if="msg.from_id === socket_room.owner">[o]</span>{{
+                                            msg.from }}</span>
                                         <span class="message">{{ msg.message }}</span>
                                     </li>
                                 </ul>
@@ -65,6 +66,7 @@
         name: 'Room',
         data: function () {
             return {
+                socket_room: {},
                 room: this.$root.$route.params['room'],
                 video_id: 'U9PPQvN25pc',
                 video_state: null,
@@ -81,6 +83,7 @@
                 chat_message: '',
                 search_video_id: 'IdlKt3SWck8',
                 playerInit: false,
+                socket_id: null,
             }
         },
         created: function () {
@@ -98,13 +101,15 @@
         },
         mounted() {
             this.player = this.$refs.player.player;
+
         },
         methods: {
             sendChatMessage() {
                 console.log('sending message ', this.chat_message)
                 this.chat.push({
                     from: 'anon',
-                    message: this.chat_message
+                    message: this.chat_message,
+                    from_id: this.$root.$data.socket_id
                 });
                 window.$socket.emit('chat message', this.chat_message)
                 this.chat_message = '';
@@ -114,7 +119,7 @@
 
                 window.$socket.on('load room', (room) => {
                     if(!room) this.$router.push({name: 'home'});
-
+                    this.socket_room = room;
                     this.video_id = room.currentVideo;
                 });
 
@@ -143,6 +148,7 @@
 
                 window.$socket.emit('join room', this.$root.$route.params);
             },
+
             play() {
                 window.$socket.emit('play video');
                 this.player.play();
