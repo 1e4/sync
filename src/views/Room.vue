@@ -204,7 +204,9 @@
                     if (!room) this.$router.push({name: 'home'});
                     this.socket_room = room;
                     console.log('Loading video', room.currentVideo);
-                    this.loadVideo(room.currentVideo);
+
+                    this.video_id = room.currentVideo;
+
                 });
 
                 window.$socket.on('room meta', (obj) => {
@@ -289,6 +291,7 @@
             },
 
             loadVideo(id) {
+              console.log("loading video", id);
                 this.player.source = {
                     type: 'video',
                     sources: [
