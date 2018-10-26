@@ -6,28 +6,53 @@
                     <h2>Welcome to {{ room }}</h2>
                     {{ this.socket_room }}
                     <h5>Room is currently playing: {{ currentVideoId }} ({{ currentVideoStatus }})</h5>
+                    <div v-if="player">
+                        {{ player.currentTime }}
+                        {{ player.duration }}
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-8">
                     <div id="player-window">
-                        <vue-plyr ref="player" :emit="['ready', 'play', 'pause', 'statechange']" @ready="ready"
+                        <vue-plyr ref="player" :emit="['ready', 'play', 'pause', 'statechange', 'timeupdate',
+                        'progress',
+                        'seeking', 'seeked']"
+                                  @ready="ready"
                                   :options="{
                                     clickToPlay: false
                                   }"
+                                  @timeupdate="timeUpdate"
                                   @play="playEvent"
                                   @pause="pauseEvent"
                                   @statechange="setVideoState"
+                                  @seeking="seekingEvent"
+                                  @seeked="seekedEvent"
+                                  @progress="bufferProgress"
                                     :controls="[]">
                             <div data-plyr-provider="youtube"></div>
                         </vue-plyr>
                     </div>
                     <div class="row">
-                        <div class="col-6">
-                            <button @click.prevent="playButton" class="btn btn-primary">Play</button>
-                            <button @click.prevent="pauseButton" class="btn btn-primary">Pause</button>
+                        <div class="col-12">
+                            <div id="control-list" class="d-flex flex-row justify-content-between">
+                                <div>
+                                    <button @click.prevent="playButton" class="btn btn-primary">Play</button>
+                                    <button @click.prevent="pauseButton" class="btn btn-primary">Pause</button>
+                                </div>
+                                <div class="progress" id="buffer-seek-bar">
+                                    <input type="range" step="0.01" class="slider" :max="currentDuration"
+                                           min="0" @change="seekTo" v-model="emitSeekTo">
+                                    <div class="progress-bar" :style="{width: currentBufferProgress + '%'}"
+                                         role="progressbar"
+                                         :aria-valuenow="currentBufferProgress"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+
                         </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <form action="" class="form-inline w-100">
                                 <div class="form-group">
                                     <input type="text" class="form-control" v-model="search_video_id">
@@ -92,22 +117,26 @@
                 socket_id: null,
                 currentVideoStatus: null,
                 lastVideoStatus: -1,
+                currentPlayProgress: 0,
+                currentBufferProgress: 0,
+                currentDuration: 0,
+                emitSeekTo: 0,
+                player: null,
             }
         },
         created: function () {
-            this.setup();
+            // this.setup();
         },
         watch: {
-            '$route': 'setup',
-            playerInit: function (val) {
-                console.log(val, this.video_id);
-                if (val === true) {
-                    this.loadVideo(this.video_id);
-                }
+            // '$route': 'setup',
+            playerInit: function(val) {
+                if(val === true)
+                    this.setup();
             }
         },
         mounted() {
             this.player = this.$refs.player.player;
+
             // @todo fix click to play
             // this.player.options.clickToPlay = false;
         },
@@ -117,6 +146,22 @@
             }
         },
         methods: {
+            timeUpdate() {
+                this.currentPlayProgress = this.player.currentTime;
+                this.emitSeekTo = this.player.currentTime
+            },
+            bufferProgress() {
+                this.currentBufferProgress = this.player.buffered * 100;
+            },
+            seekTo() {
+                console.log('seekto', this.emitSeekTo);
+                this.readyToPlay = false;
+                // If going backwards
+                if(this.emitSeekTo < this.currentPlayProgress)
+                    window.$socket.emit('seek backwards to', (this.currentPlayProgress - this.emitSeekTo));
+                else
+                    window.$socket.emit('seek forwards to', (this.emitSeekTo - this.currentPlayProgress));
+            },
             setVideoState(event) {
                 let code = event.detail.code;
 
@@ -158,7 +203,8 @@
                     console.log('loading room', room);
                     if (!room) this.$router.push({name: 'home'});
                     this.socket_room = room;
-                    this.loadVideo(room.currentVideo)
+                    console.log('Loading video', room.currentVideo);
+                    this.loadVideo(room.currentVideo);
                 });
 
                 window.$socket.on('room meta', (obj) => {
@@ -192,7 +238,15 @@
 
                 window.$socket.on('play all', () => {
                     this.player.play();
-                })
+                });
+
+                window.$socket.on('seek forwards to', (time) => {
+                    this.player.forward(time)
+                });
+
+                window.$socket.on('seek backwards to', (time) => {
+                    this.player.rewind(time)
+                });
 
                 window.$socket.on('buffer video', () => {
                     // Syncing/buffering video
@@ -205,6 +259,10 @@
             },
             pauseEvent() {
                 // window.$socket.emit('pause video');
+            },
+            seekingEvent(event) {
+            },
+            seekedEvent() {
             },
             playButton() {
                 window.$socket.emit('play video');
@@ -226,6 +284,8 @@
 
             ready() {
                 this.playerInit = true;
+                this.currentDuration = this.player.duration;
+                console.log(this.player.duration, 'ready');
             },
 
             loadVideo(id) {
