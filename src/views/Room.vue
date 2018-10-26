@@ -100,10 +100,10 @@
         watch: {
             '$route': 'setup',
             playerInit: function (val) {
-                console.log(val, this.video_id);
-                if (val === true) {
-                    this.loadVideo(this.video_id);
-                }
+              if(val === true)
+              {
+                this.loadVideo(this.video_id);
+              }
             }
         },
         mounted() {
@@ -158,7 +158,10 @@
                     console.log('loading room', room);
                     if (!room) this.$router.push({name: 'home'});
                     this.socket_room = room;
-                    this.loadVideo(room.currentVideo)
+                    console.log('load room', room);
+
+                    this.video_id = room.currentVideo;
+
                 });
 
                 window.$socket.on('room meta', (obj) => {
@@ -229,6 +232,7 @@
             },
 
             loadVideo(id) {
+              console.log("loading video", id);
                 this.player.source = {
                     type: 'video',
                     sources: [
