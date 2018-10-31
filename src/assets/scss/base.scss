@@ -11,114 +11,126 @@
 }
 
 #control-list {
-    #buffer-seek-bar {
-        position: relative;
+
+}
+
+$buffer-bar-bg-color: rgba(0,0,0,0.1);
+$current-progress-bg-color: purple;
+$thumb-bg-color: red;
+$track-bg-color: transparent;
+$thumb-width: 50px;
+$thumb-height: 30px;
+$track-height: 30px;
+
+#buffer-seek-bar {
+    position: relative;
+    width: 100%;
+    height: $track-height;
+    background-color: orange;
+
+    input[type="range"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: $track-height;
+        z-index: 20;
+        background: transparent;
+    }
+
+    input[type=range].slider {
+        -webkit-appearance: none;
+        width: 100%;
+    }
+
+    input[type=range].slider:focus {
+        outline: none;
+    }
+
+    input[type=range].slider::-webkit-slider-runnable-track {
+        width: 100%;
+        height: $track-height;
+        cursor: pointer;
+        background: $track-bg-color;
+        border-radius: 3px;
+        z-index: 20;
+    }
+
+    input[type=range].slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: $thumb-height;
+        width: $thumb-width;
+        border-radius: 3px;
+        background: $thumb-bg-color;
+        cursor: pointer;
+    }
+
+    input[type=range].slider:focus::-webkit-slider-runnable-track {
+        background: $track-bg-color;
+    }
+
+    // This is the bar behind the knob
+    input[type=range].slider::-moz-range-track {
+        width: 100%;
+        height: $track-height;
+        cursor: pointer;
+        background: $track-bg-color;
+        border-radius: 3px;
+        z-index: 20;
+    }
+
+
+    input[type=range].slider::-moz-range-thumb {
+        height: $thumb-height;
+        width: $thumb-width;
+        border-radius: 3px;
+        background: $thumb-bg-color;
+        cursor: pointer;
+    }
+
+    input[type=range].slider::-ms-track {
         width: 100%;
         height: 30px;
-
-        input[type="range"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 30px;
-        }
-
-        input[type=range].slider {
-            -webkit-appearance: none;
-            width: 100%;
-            margin: 13.8px 0;
-        }
-        input[type=range].slider:focus {
-            outline: none;
-        }
-        input[type=range].slider::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 8.4px;
-            cursor: pointer;
-            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-            background: #3071a9;
-            border-radius: 1.3px;
-            border: 0.2px solid #010101;
-        }
-        input[type=range].slider::-webkit-slider-thumb {
-            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-            border: 1px solid #000000;
-            height: 36px;
-            width: 16px;
-            border-radius: 3px;
-            background: #ffffff;
-            cursor: pointer;
-            -webkit-appearance: none;
-            margin-top: -14px;
-        }
-        input[type=range].slider:focus::-webkit-slider-runnable-track {
-            background: #367ebd;
-        }
-        input[type=range].slider::-moz-range-track {
-            width: 100%;
-            height: 8.4px;
-            cursor: pointer;
-            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-            background: #3071a9;
-            border-radius: 1.3px;
-            border: 0.2px solid #010101;
-        }
-        input[type=range].slider::-moz-range-thumb {
-            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-            border: 1px solid #000000;
-            height: 36px;
-            width: 16px;
-            border-radius: 3px;
-            background: #ffffff;
-            cursor: pointer;
-        }
-        input[type=range].slider::-ms-track {
-            width: 100%;
-            height: 8.4px;
-            cursor: pointer;
-            background: transparent;
-            border-color: transparent;
-            color: transparent;
-        }
-        input[type=range].slider::-ms-fill-lower {
-            background: #2a6495;
-            border: 0.2px solid #010101;
-            border-radius: 2.6px;
-            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-        }
-        input[type=range].slider::-ms-fill-upper {
-            background: #3071a9;
-            border: 0.2px solid #010101;
-            border-radius: 2.6px;
-            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-        }
-        input[type=range].slider::-ms-thumb {
-            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-            border: 1px solid #000000;
-            height: 36px;
-            width: 16px;
-            border-radius: 3px;
-            background: #ffffff;
-            cursor: pointer;
-            height: 8.4px;
-        }
-        input[type=range].slider:focus::-ms-fill-lower {
-            background: #3071a9;
-        }
-        input[type=range].slider:focus::-ms-fill-upper {
-            background: #367ebd;
-        }
-
-        > .progress-bar {
-
-        }
+        cursor: pointer;
+        background: $track-bg-color;
+        border-radius: 3px;
+        z-index: 20;
+        position: relative;
     }
 
-    #play-bar {
-
-
+    input[type=range].slider::-ms-fill-lower {
+        background: $track-bg-color;
     }
+
+    input[type=range].slider::-ms-fill-upper {
+        background: $track-bg-color;
+    }
+
+    input[type=range].slider::-ms-thumb {
+        height: $thumb-height;
+        width: $thumb-width;
+        border-radius: 3px;
+        background: $thumb-bg-color;
+        cursor: pointer;
+    }
+
+    input[type=range].slider:focus::-ms-fill-lower {
+    }
+
+    input[type=range].slider:focus::-ms-fill-upper {
+    }
+
+    // Buffer bar
+    > .progress-bar {
+        background-color: $buffer-bar-bg-color;
+        z-index: 10;
+        pointer-events: none;
+    }
+}
+
+#play-bar {
+
+
 }
 
 #chat-window {

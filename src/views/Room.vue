@@ -13,6 +13,18 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-12">
+                  <div class="progress" id="buffer-seek-bar">
+                      <input type="range" step="0.01" class="slider" max="100"
+                             min="0" value="30">
+                      <div class="progress-bar" :style="{width: '40%'}"
+                           role="progressbar"
+                           aria-valuemin="0"
+                           aria-valuemax="100"></div>
+                  </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-8">
                     <div id="player-window">
                         <vue-plyr ref="player" :emit="['ready', 'play', 'pause', 'statechange', 'timeupdate',
