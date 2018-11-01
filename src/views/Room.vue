@@ -203,9 +203,11 @@
                     console.log('loading room', room);
                     if (!room) this.$router.push({name: 'home'});
                     this.socket_room = room;
-                    console.log('Loading video', room.currentVideo);
+                    console.log('Loading video from socket', room.currentVideo);
 
                     this.video_id = room.currentVideo;
+
+                    this.loadVideo(room.currentVideo)
 
                 });
 
